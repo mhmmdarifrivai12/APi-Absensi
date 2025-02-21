@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Guru</title>
+    <script defer src="guru.js"></script> <!-- Pisahkan script ke file eksternal -->
+</head>
+<body>
+
+    <h2>Absensi Siswa</h2>
+
+    <label for="class-select">Pilih Kelas:</label>
+    <select id="class-select">
+        <option value="">Pilih Kelas</option>
+    </select>
+
+    <h3>Daftar Siswa</h3>
+    <form id="attendance-form">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Nama Siswa</th>
+                    <th>NIS</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="student-list">
+                <tr><td colspan="3">Pilih kelas untuk menampilkan siswa.</td></tr>
+            </tbody>
+        </table>
+
+        <label for="attendance-date">Tanggal:</label>
+        <input type="date" id="attendance-date" required>
+
+        <button type="submit">Simpan Absensi</button>
+    </form>
+
+    <h3>Riwayat Absensi</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Hari</th>
+                <th>Nama Siswa</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="attendance-history">
+            <tr><td colspan="4">Pilih kelas untuk melihat riwayat absensi.</td></tr>
+        </tbody>
+    </table>
+
+    <button onclick="logout()">Logout</button>
+
+</body>
+</html>

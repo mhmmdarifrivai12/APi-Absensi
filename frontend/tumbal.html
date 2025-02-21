@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Manajemen Sekolah</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            checkAuth();
+            await fetchDropdownData();
+            await fetchAssignedTeachers(); // Fetch daftar guru mengajar
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            if (!token || role !== 'admin') {
+                alert('Akses ditolak!');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            alert('Anda telah logout.');
+            window.location.href = 'index.html';
+        }
+
+        async function fetchDropdownData() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const [classRes, subjectRes, teacherRes] = await Promise.all([
+                    fetch('http://localhost:5000/api/admin/classes', { headers: { 'Authorization': `Bearer ${token}` }, mode: 'cors' }),
+                    fetch('http://localhost:5000/api/admin/subjects', { headers: { 'Authorization': `Bearer ${token}` }, mode: 'cors' }),
+                    fetch('http://localhost:5000/api/admin/teachers', { headers: { 'Authorization': `Bearer ${token}` }, mode: 'cors' })
+                ]);
+
+                updateDropdown('class-select', await classRes.json(), 'id', 'name', 'Pilih Kelas');
+                updateDropdown('subject-select', await subjectRes.json(), 'id', 'name', 'Pilih Mata Pelajaran');
+                updateDropdown('teacher-select', await teacherRes.json(), 'id', 'username', 'Pilih Guru'); // Fix: Gunakan 'username'
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal mengambil data dropdown.');
+            }
+        }
+
+        function updateDropdown(elementId, data, valueField, textField, placeholder) {
+            const select = document.getElementById(elementId);
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valueField];
+                option.textContent = item[textField];
+                select.appendChild(option);
+            });
+        }
+
+        async function assignTeacher() {
+            const teacher_id = document.getElementById('teacher-select').value;
+            const class_id = document.getElementById('class-select').value;
+            const subject_id = document.getElementById('subject-select').value;
+            const teaching_day = document.getElementById('day-select').value;
+            const start_time = document.getElementById('start-time').value;
+            const duration = document.getElementById('duration-select').value;
+
+            console.log({
+                teacher_id, class_id, subject_id, teaching_day, start_time, duration
+            });
+
+            if (!teacher_id || !class_id || !subject_id || !teaching_day || !start_time || !duration) {
+                alert('Mohon isi semua field!');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/assign-teacher', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ teacher_id, class_id, subject_id, teaching_day, start_time, duration })
+                });
+
+                const data = await response.json();
+                console.log('Response:', data);
+                alert(data.message);
+                fetchAssignedTeachers(); // Update daftar guru mengajar setelah menetapkan
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menetapkan guru.');
+            }
+        }
+
+        async function fetchAssignedTeachers() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/teachers-schedule', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                updateAssignedTeachersTable(data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal mengambil daftar guru mengajar.');
+            }
+        }
+
+        function updateAssignedTeachersTable(data) {
+            const tableBody = document.getElementById('assigned-teachers-body');
+            tableBody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.teacher_name}</td>
+                    <td>${item.class_name}</td>
+                    <td>${item.subject_name}</td>
+                    <td>${item.teaching_day}</td>
+                    <td>${item.start_time}</td>
+                    <td>${item.duration} Menit</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Dashboard Admin</h2>
+    <button onclick="logout()">Logout</button>
+
+    <h3>Menetapkan Guru ke Kelas & Mata Pelajaran</h3>
+    <label>Pilih Guru:</label>
+    <select id="teacher-select"></select>
+
+    <label>Pilih Kelas:</label>
+    <select id="class-select"></select>
+
+    <label>Pilih Mata Pelajaran:</label>
+    <select id="subject-select"></select>
+
+    <label>Pilih Hari Mengajar:</label>
+    <select id="day-select">
+        <option value="">Pilih Hari</option>
+        <option value="Senin">Senin</option>
+        <option value="Selasa">Selasa</option>
+        <option value="Rabu">Rabu</option>
+        <option value="Kamis">Kamis</option>
+        <option value="Jumat">Jumat</option>
+        <option value="Sabtu">Sabtu</option>
+        <option value="Minggu">Minggu</option>
+    </select>
+
+    <label>Jam Mulai:</label>
+    <input type="time" id="start-time">
+
+    <label>Durasi Mengajar:</label>
+    <select id="duration-select">
+        <option value="">Pilih Durasi</option>
+        <option value="60">60 Menit</option>
+        <option value="120">120 Menit</option>
+        <option value="180">180 Menit</option>
+    </select>
+
+    <button onclick="assignTeacher()">Tetapkan Guru</button>
+
+    <h3>Daftar Guru yang Mengajar</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Guru</th>
+                <th>Kelas</th>
+                <th>Mata Pelajaran</th>
+                <th>Hari</th>
+                <th>Jam Mulai</th>
+                <th>Durasi</th>
+            </tr>
+        </thead>
+        <tbody id="assigned-teachers-body"></tbody>
+    </table>
+</body>
+</html>

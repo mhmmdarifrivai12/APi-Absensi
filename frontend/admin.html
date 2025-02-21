@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Manajemen Sekolah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+    <h2 class="mb-3">Dashboard Admin</h2>
+    <button class="btn btn-danger mb-3" onclick="logout()">Logout</button>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Tambah Kelas</h3>
+            <div class="input-group mb-3">
+                <input type="text" id="class-name" class="form-control" placeholder="Nama Kelas">
+                <button class="btn btn-primary" onclick="addClass()">Tambah</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Tambah Mata Pelajaran</h3>
+            <div class="input-group mb-3">
+                <input type="text" id="subject-name" class="form-control" placeholder="Nama Mata Pelajaran">
+                <button class="btn btn-primary" onclick="addSubject()">Tambah</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Tambah Siswa</h3>
+            <input type="text" id="student-name" class="form-control mb-2" placeholder="Nama Siswa">
+            <input type="text" id="student-nis" class="form-control mb-2" placeholder="NIS">
+            <select id="class-select" class="form-select mb-2"></select>
+            <button class="btn btn-success" onclick="addStudent()">Tambah Siswa</button>
+        </div>
+        <div class="col-md-6">
+            <h3>Daftar Mata Pelajaran</h3>
+            <ul id="subject-list" class="list-group"></ul>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Daftar Kelas & Siswa</h3>
+    <table class="table table-bordered">
+        <tbody id="class-student-list"></tbody>
+    </table>
+
+    <h3 class="mt-4">Menetapkan Guru ke Kelas & Mata Pelajaran</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Pilih Guru:</label>
+            <select id="teacher-select" class="form-select mb-2"></select>
+        </div>
+        <div class="col-md-4">
+            <label>Pilih Kelas:</label>
+            <select id="teacher-class-select" class="form-select mb-2"></select>
+        </div>
+        <div class="col-md-4">
+            <label>Pilih Mata Pelajaran:</label>
+            <select id="subject-select" class="form-select mb-2"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label>Pilih Hari Mengajar:</label>
+            <select id="day-select" class="form-select mb-2">
+                <option value="Senin">Senin</option>
+                <option value="Selasa">Selasa</option>
+                <option value="Rabu">Rabu</option>
+                <option value="Kamis">Kamis</option>
+                <option value="Jumat">Jumat</option>
+                <option value="Sabtu">Sabtu</option>
+                <option value="Minggu">Minggu</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Jam Mulai:</label>
+            <select id="start-time" class="form-select mb-2">
+                <option value="07:00">07:00</option>
+                <option value="08:00">08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Durasi Mengajar:</label>
+            <select id="duration-select" class="form-select mb-2">
+                <option value="60">60 Menit</option>
+                <option value="120">120 Menit</option>
+                <option value="180">180 Menit</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn btn-warning mt-2" onclick="assignTeacher()">Tetapkan Guru</button>
+
+    <h3 class="mt-4">Daftar Guru yang Mengajar</h3>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>Nama Guru</th>
+                <th>Kelas</th>
+                <th>Mata Pelajaran</th>
+                <th>Hari</th>
+                <th>Jam Mulai</th>
+                <th>Durasi</th>
+            </tr>
+        </thead>
+        <tbody id="assigned-teachers-body"></tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
